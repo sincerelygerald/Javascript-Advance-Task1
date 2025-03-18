@@ -10,12 +10,11 @@ const lowestValue = document.getElementById("lowest");
 
 const tbl = document.getElementById("tblNumbers");
 
-let total = 0;
 let numbersArr = [];
 
 function insertNumber() {
     const txtNumber = document.getElementById("txtNum").value;
-    let regex = /^[0-9]+$/; 
+    let regex = /^[0-9]+$/; // Regular expression for checking positive numbers.
 
     if (txtNumber.match(regex)) {
         let num = parseInt(txtNumber);
@@ -42,7 +41,6 @@ btn2.addEventListener("click", () => {
 
 btn3.addEventListener("click", () => {
     numbersArr = [];
-    total = 0;
     while (tbl.hasChildNodes()) {
         tbl.removeChild(tbl.firstChild);
     }
@@ -51,28 +49,22 @@ btn3.addEventListener("click", () => {
     document.getElementById("btn4").style.display = "none";
 });
 
-btn4.addEventListener("click", () => {
-    const trTotal = document.createElement("tr");
-    const tdTotalLabel = document.createElement("td");
-    const tdTotalValue = document.createElement("td");
+btnSortAsc.addEventListener("click", () => {
+    numbersArr.sort((a, b) => a - b);
+    iterateNumbers();
+    updateHighLow();
+});
 
-    trTotal.style.height = "30px";
-
-    tdTotalLabel.style.fontWeight = "bold";
-    tdTotalLabel.innerHTML = "TOTAL";
-
-    tdTotalValue.style.textDecoration = "underline";
-    tdTotalValue.innerHTML = total;
-        
-    trTotal.appendChild(tdTotalLabel);
-    trTotal.appendChild(tdTotalValue);
-    tbl.appendChild(trTotal);
+btnSortDesc.addEventListener("click", () => {
+    numbersArr.sort((a, b) => b - a);
+    iterateNumbers();
+    updateHighLow();
 });
 
 function deleteNumber(i) {
     numbersArr.splice(i, 1);
-    updateHighLow();
     iterateNumbers();
+    updateHighLow();
 }
 
 function editNumber(i) {
@@ -83,24 +75,12 @@ function editNumber(i) {
         alert("You did not input a new value!");
     } else if (editTxt.match(regex)) {
         numbersArr[i] = parseInt(editTxt);
-        updateHighLow();
         iterateNumbers();
+        updateHighLow();
     } else {
         alert("You did not input a valid number!");
     }
 }
-
-function sortNumbers(order) {
-    if (order === "asc") {
-        numbersArr.sort((a, b) => a - b);
-    } else if (order === "desc") {
-        numbersArr.sort((a, b) => b - a);
-    }
-    iterateNumbers();
-}
-
-btnSortAsc.addEventListener("click", () => sortNumbers("asc"));
-btnSortDesc.addEventListener("click", () => sortNumbers("desc"));
 
 function updateHighLow() {
     if (numbersArr.length > 0) {
@@ -114,4 +94,44 @@ function updateHighLow() {
 
 function iterateNumbers() {
     while (tbl.hasChildNodes()) {
-       
+        tbl.removeChild(tbl.firstChild);
+    }
+
+    if (numbersArr.length > 0) {
+        for (let i = 0; i < numbersArr.length; i++) {
+            const tr = document.createElement("tr");
+            const td1 = document.createElement("td");
+            const td2 = document.createElement("td");
+            const td3 = document.createElement("td");
+            const td4 = document.createElement("td");
+            const btnDelete = document.createElement("button");
+            const btnEdit = document.createElement("button");
+
+            td1.style.width = "70px";
+            td1.innerHTML = numbersArr[i];
+
+            td2.style.width = "70px";
+            td2.style.color = numbersArr[i] % 2 === 0 ? "green" : "blue";
+            td2.innerHTML = numbersArr[i] % 2 === 0 ? "EVEN" : "ODD";
+
+            btnDelete.setAttribute("onclick", `deleteNumber(${i})`);
+            btnDelete.innerHTML = "Remove"; 
+
+            btnEdit.setAttribute("onclick", `editNumber(${i})`);
+            btnEdit.innerHTML = "Edit";
+
+            td3.appendChild(btnDelete);
+            td4.appendChild(btnEdit);
+
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+            tr.appendChild(td4);
+            tbl.appendChild(tr);
+
+            document.getElementById("btn4").style.display = "inline";
+        }
+    } else {
+        document.getElementById("btn4").style.display = "none";
+    }
+}
